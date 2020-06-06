@@ -1,9 +1,12 @@
 
 <head>
   <title><%= username %></title>
-  <script src="https://togetherjs.com/togetherjs-min.js"></script>
+  <link id="favicon" rel="icon" href="<%= github.avatar_url %>">
+  <meta name="description" content="View <%= github.login %>'s profile on GlitchyPastePen!">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Raleway&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap');
     
     body {
       --fore: black;
@@ -37,9 +40,9 @@
       padding-top: 10px;
       padding-left: 20px;
       padding-bottom: 10px;
-      font-family: "Raleway", sans-serif;
+      font-family: "Fira Mono", "Inter", "Raleway", sans-serif;
       transition: 1s ease;
-      background-color: #85FFBD;
+      background-color: #F0F0F0;
       border-radius: 5px;
       margin-top: 20px;
       display: block;
@@ -47,6 +50,14 @@
       left: 0px;
       font-size: 25px;
       overflow: hidden;
+      box-shadow:
+        0 0px 2.2px rgba(0, 0, 0, 0.02),
+        0 0px 5.3px rgba(0, 0, 0, 0.028),
+        0 0px 10px rgba(0, 0, 0, 0.035),
+        0 0px 17.9px rgba(0, 0, 0, 0.042),
+        0 0px 33.4px rgba(0, 0, 0, 0.05),
+        0 0px 80px rgba(0, 0, 0, 0.07)
+      ;
     }
     
     img {
@@ -112,7 +123,6 @@
     <button class="new">
       <a href="/logout">logout</a>
     </button>
-    <button class="new" onclick="TogetherJS(this); return false;">Stream to friends!</button>
     <button class="new">
       <a href="/editor/new">NEW PROJECT</a>
     </button>
@@ -143,4 +153,5 @@
       })
     }  
   </script>
+  <script src="https://togetherjs.com/togetherjs-min.js"></script>
 </body>

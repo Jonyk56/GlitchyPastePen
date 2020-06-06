@@ -1,17 +1,31 @@
 <html>
   <head>
-    <title>GlitchyPastePen</title>
-    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/public/style.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
     />
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
-    <meta
-      name="description"
-      content="glitchypastepen"
-    />
+    <!-- Primary Meta Tags -->
+    <title>GlitchyPastePen</title>
+    <meta name="title" content="GlitchyPastePen">
+    <meta name="description" content="Create simple front-end projects (mainly with HTML, CSS and JS) using an online code editor with instant hosting.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://glitchypastepen.glitch.me/">
+    <meta property="og:title" content="GlitchyPastePen">
+    <meta property="og:description" content="Create simple front-end projects (mainly with HTML, CSS and JS) using an online code editor with instant hosting.">
+    <meta property="og:image" content="https://cdn.khaleelgibran.com/img/glitchypastepen.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://glitchypastepen.glitch.me/">
+    <meta property="twitter:title" content="GlitchyPastePen">
+    <meta property="twitter:description" content="Create simple front-end projects (mainly with HTML, CSS and JS) using an online code editor with instant hosting.">
+    <meta property="twitter:image" content="https://cdn.khaleelgibran.com/img/glitchypastepen.png">
+
   </head>
   <body>
     <header>
@@ -21,17 +35,17 @@
           height="100px"
       /></a>
       <span style="float:right;margin-right:20px;">
-        <a href="#login"><button>
+        <a href="https://github.com/login/oauth/authorize?client_id=b1619bb3723d36119cfa"><button>
           Login
         </button></a>
-        <a href="/signup"><button>
+        <a href="https://github.com/login/oauth/authorize?client_id=b1619bb3723d36119cfa"><button>
           Signup
         </button></a>
       </span>
     </header>
     <div id="intro">
       <h1 class="main">
-        <code>GlitchyPastePen</code>.
+        GlitchyPastePen.
       </h1>
       <p class="desc">
         A web project I created aimed at creating simple websites using HTML,
@@ -42,33 +56,11 @@
       <img src="https://cdn.glitch.com/622554c6-3118-4838-8819-e003b9525f5d%2Fscreely-1591191781898.png?v=1591191852875" width="100%">
     </center>
     <br /><br />
-    <center id="login">
-      <img src="https://cdn.glitch.com/622554c6-3118-4838-8819-e003b9525f5d%2Flogin.svg?v=1589387214624" width="25%">
-      <h1>
-        Login
-      </h1>
-      <p class="sigunp-link">or <a href="/signup">signup</a></p>
-      <input
-        type="text"
-        placeholder="Username"
-        class="username"
-        required
-      /><br />
-      <input
-        type="password"
-        placeholder="Password"
-        class="password"
-        required
-      /><br />
-      <button class="submit" onclick="login();">
-        Login
-      </button>
-    </center>
 
     <!-- lot of line breaks -->
     <br /><br /><br /><br /><br /><br /><br />
 
-    <script src="/login.js"></script>
+    <script src="/public/login.js"></script>
   </body>
   <footer>
   <small>&copy; 2020 @khalby786 and @17lwinn (The GlitchyPastePen devs)</small>
