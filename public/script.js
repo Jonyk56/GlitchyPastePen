@@ -1,23 +1,24 @@
-var editor = ace.edit("editor");
-editor.setTheme("ace/theme/monokai");
-editor.session.setMode("ace/mode/html");
-var io = require("socket.io");
+// Editor elements, including Ace imported from Ace.js
+const editor = ace.edit("editor");
+const format = ace.require("ace/ext/beautify");
+const io = require("socket.io");
+const iframe = document.querySelector("iframe");
+const editorDiv = document.getElementById("editor");
+const footer = document.getElementById("editor-footer");
+const projecturl = window.location.href;
+const projectname = projecturl.slice(41);
+const projectname_el = document.getElementById("project-name");
 
+// Ace.js configurations
 ace.require("ace/ext/language_tools");
 
-document.addEventListener("keydown", function(event) {
-  TogetherJS.reinitialize();
-});
-
-function beautify() {
-  var beautify = ace.require("ace/ext/beautify");
-  beautify.beautify(editor.session);
-}
+editor.setTheme("ace/theme/monokai");
+editor.session.setMode("ace/mode/html");
 
 editor.setOptions({
-  fontSize: "1.5vw",
+  fontSize: "14px",
   fontFamily: "Fira Mono",
-  enableBasicAutocompletion: true,
+  enableBasicAutoCompletion: true,
   autoScrollEditorIntoView: true
 });
 
@@ -26,34 +27,66 @@ var EditSession = require("ace/edit_session").EditSession;
 var html = new EditSession("<html></html>", "ace/mode/html");
 var js = new EditSession("console.log('//hi')", "ace/mode/javascript");
 var css = new EditSession("body { color: red; }", "ace/mode/css");
-// and then to load document into editor, just call
+
 editor.setSession(html);
-js.setOverwrite(true);
-html.setOverwrite(true);
-css.setOverwrite(true);
+// js.setOverwrite(true);
+// html.setOverwrite(true);
+// css.setOverwrite(true);
 
-let projecturl = window.location.href;
-let projectname = projecturl.slice(41);
-document.getElementById("project-name").value = projectname;
-document.getElementsByClassName("projectname")[0].innerText = projectname;
-document.getElementsByClassName("projectname")[1].innerText = projectname;
-// nice
-// var socket = io('https://glitchypastepen.glitch.me',
-// {
-//   transports: ['websocket']
-// }); 
+// Custom commands
+editor.commands.addCommand({
+  name: "showKeyboardShortcuts",
+  bindKey: { win: "Ctrl-Alt-h", mac: "Command-Alt-h" },
+  exec: function(editor) {
+    ace.config.loadModule("ace/ext/keybinding_menu", function(module) {
+      module.init(editor);
+      editor.showKeyboardShortcuts();
+    });
+  }
+});
 
-window.onkeyup = () => {
-  socket.emit("codeChange", {
-    html: html.getValue(),
-    js: js.getValue(),
-    css: css.getValue()
-  });
+// Beautify function beautify code
+function beautify() {
+  format.beautify(editor.session);
 }
 
-// the console will be flooded
-// temporary logging alright try now ok
-// see discord
+const cursorpos = () => {
+  let pos = editor.getCursorPosition();
+  let col = pos.column;
+  let row = pos.row;
+  document.getElementById("pos").innerText = `${col}:${row}`;
+}
+
+// Update cursor position with events
+window.onload = () => {
+  cursorpos();
+}
+
+window.onclick = () => {
+  cursorpos();
+};
+
+window.onkeyup = () => {
+  cursorpos();
+};
+
+projectname_el.value = projectname;
+document.getElementsByClassName("projectname")[0].innerText = projectname;
+document.getElementsByClassName("projectname")[1].innerText = projectname;
+
+projectname_el.onclick = () => {
+  simplecopy(projectname_el.value);
+  projectname_el.value = "Copied!"
+  setTimeout(() => projectname_el.value = projectname, 700)
+}
+
+/**
+  *
+  *FETCH REQUESTS TO FETCH INFO FROM BACKEND 
+  *
+**/
+
+// Get project code
 let name = document.getElementById("project-name").value;
 let path = "/getCode/" + name;
 fetch(path)
@@ -67,6 +100,7 @@ fetch(path)
     css.setValue(data.css);
   });
 
+// Get project info like project owner
 fetch("/projectinfo/" + projectname)
   .then(response => response.json())
   .then(data => {
@@ -74,6 +108,7 @@ fetch("/projectinfo/" + projectname)
     document.getElementsByClassName("owner")[0].href = "/u/" + data.owner;
   });
 
+// Save your code and deploy!
 function deploy() {
   let code = html.getValue();
   let js2 = js.getValue();
@@ -110,6 +145,7 @@ function deploy() {
     });
 }
 
+// Add a new contributor to allow access to your project
 function contributor() {
   console.log(projectname);
   let contributor = prompt(
@@ -135,7 +171,14 @@ function contributor() {
   }
 }
 
-function cancel() {}
+// CSS adjustments using Javascript to dynamicaly set editor height
+if (iframe.style.display === 'block') {
+  editorDiv.style.bottom = iframe.style.height + footer.style.height;
+  editor.resize(true);
+} else {
+  editorDiv.style.bottom = footer.style.height;
+}
 
-TogetherJSConfig_hubBase = "https://gpphub.herokuapp.com/";
-TogetherJSConfig_findRoom = projecturl.slice(41);
+window.onload = () => {
+  document.getElementById("loader").style.display = "none";
+}

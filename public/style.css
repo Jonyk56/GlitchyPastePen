@@ -1,5 +1,6 @@
 @import url("https://rsms.me/inter/inter.css");
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@500&family=IBM+Plex+Mono&display=swap');
 
 body {
   --fore: black;
@@ -24,6 +25,8 @@ body {
   border: 5px dashed yellow;
   margin-top: 50px;
   border-radius: 5px;
+  background-color: #272822;
+  color: white;
 }
 
 a {
@@ -174,6 +177,7 @@ pre {
   border: 1px dashed white;
   margin-right: 20px;
   z-index: 4;
+  height: 75px;
 }
 
 .signup-link {
@@ -200,11 +204,12 @@ footer {
   bottom: 0;
   width: 100%;
   height: 15%;
-  background-color: #1f2430;
   color: white;
   text-align: center;
   margin-bottom: 0px;
   padding-top: 20px;
+  position: relative;
+  font-family: "IBM Plex Mono", monospace;
 }
 
 .i {
@@ -318,6 +323,7 @@ button {
   cursor: pointer;
   font-family: "IBM Plex Mono", monospace;
   margin-bottom: 10px;
+  font-size: 15px;
 }
 
 button:hover {
@@ -396,5 +402,59 @@ button:hover {
 
 
 .code {
+  font-family: "Fira Mono", "IBM Plex Mono", monospace;
+}
+
+#blob {
+  position: absolute;
+  z-index: -1;
+  top: -200px;
+  left: -200px;
+  width: 50vw;
+}
+
+#wave {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  width: 100%;
+  z-index: -1;
+}
+
+iframe {
+  display: none;
+  width: 100%;
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  border: none;
+  background-color: white;
+  z-index: 10;
+  height: 150px;
+}
+
+#settings {
+  border-radius: 3px;
+  position: fixed;
+}
+
+kbd {
+  align-items: center;
+  background: #fafafa;
+  border: 1px solid #d0d0d0;
+  border-bottom-width: 1px;
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  box-sizing: border-box;
+  color: #222;
+  display: inline-flex;
+  font-size: 0.8706em;
+  justify-content: center;
+  line-height: 1.4;
+  margin: 0 0.15em;
+  min-width: 24px;
+  padding: 0.15em 0.6em;
   font-family: "Fira Mono", "IBM Plex Mono", monospace;
 }
