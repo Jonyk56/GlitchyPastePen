@@ -61,7 +61,7 @@ GlitchyPastePen has an online code IDE, which allows you to create a simple stat
 ![](https://cdn.glitch.com/622554c6-3118-4838-8819-e003b9525f5d%2F539afee2-b116-4516-95df-51113f89adab.image.png?v=1591507384298)
 
 7. 
-lick on "New oAuth App"
+Click on "New oAuth App"
 
 ![](https://cdn.glitch.com/622554c6-3118-4838-8819-e003b9525f5d%2F7734c72e-2d9f-430b-9dd6-3355ceabd05c.image.png?v=1591507568690)
 
