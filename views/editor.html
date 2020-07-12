@@ -30,6 +30,7 @@
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/eruda"></script>
+    <script src="https://kit.fontawesome.com/98f54f160f.js" crossorigin="anonymous"></script>
     <style type="text/css">
       #editor {
         position: absolute;
@@ -131,6 +132,9 @@
       <button class="deploy" onclick="simplecopy(editor.getValue())" style="font-size:37px;">
         📋
       </button>
+      <button class="deploy" onclick="alert('coming soon!')">
+        <i class="fas fa-window-restore" style="background-color: none;color:white;font-size:35px;"></i>
+      </button>
       <p class="p-title">
         <i>PROJECT NAME</i>
       </p>
@@ -153,6 +157,11 @@
     <div id="settings">
       
     </div>
+    
+<!--     <aside id="preview">
+      Hi
+    </aside> -->
+    
     <footer id="editor-footer">
       <span class="left code" onclick="editor.setSession(html);">
         index.html
@@ -201,6 +210,7 @@
         </span></a
       >
     </footer>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.11/ext-beautify.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.11/ext-language_tools.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
