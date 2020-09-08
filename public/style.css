@@ -43,29 +43,34 @@ header {
 }
 
 #project-name {
-  margin-left: 20px;
+  margin-left: 10px;
   margin-top: 0px;
-  background-color: #272822;
+  background-color: yellow;
   border: none;
-  color: white;
-  font-family: "Inter", "Helvetica", "Arial", sans-serif;
+  color: black;
+  font-family: "IBM Plex Mono", "Inter", "Helvetica", "Arial", sans-serif;
+  text-transform: uppercase;
   height: 35px;
-  font-size: 30px;
+  font-size: 20px;
   resize: none;
   overflow-y: hidden;
   outline: none;
   display: inline-block;
+  border-radius: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  width: 400px;
 }
 
 .owner {
-  margin-left: 20px;
+  margin-left: 10px;
   margin-top: 0px;
   color: white;
 }
 
 .p-title {
   margin-bottom: 0px;
-  margin-left: 20px;
+  margin-left: 10px;
   display: block;
   color: white;
 }
@@ -174,10 +179,19 @@ pre {
   display: inline-block;
   float: right;
   cursor: pointer; 
-  border: 1px dashed white;
+  border: 1px solid white;
   margin-right: 20px;
-  z-index: 4;
-  height: 75px;
+  font-size: 16px;
+  background-color: black;
+  color: white;
+  font-family: "Inter", sans-serif;
+  transition: 300ms !important;
+}
+
+.deploy:hover {
+  background-color: white !important;
+  color: black !important;
+  transition: 300ms !important;
 }
 
 .signup-link {
@@ -307,9 +321,6 @@ button:hover {
   background-color: yellow;
   color: black;
   transition: 200ms linear;
-  -webkit-transform: scale(1.01);
-  -ms-transform: scale(1.01);
-  transform: scale(1.01);
 }
 
 #option {
@@ -399,7 +410,7 @@ button:hover {
   z-index: -1;
 }
 
-iframe {
+#devtool {
   display: none;
   width: 100%;
   position: fixed;
@@ -444,4 +455,119 @@ kbd {
   width: 300px;
   right: 0px;
   top: 0px;
+}
+
+#notification {
+  position: absolute;
+  bottom: 40px;
+  right: 20px;
+  z-index: 9;
+  background-color: yellow;
+  font-family: "IBM Plex Mono", "Fira Mono", monospace;
+  width: 400px;
+  padding-right: 20px;
+  padding-left: 10px;
+  color: black !important;
+  border-radius: 5px;
+}
+
+#notification p {
+  color: black !important;
+}
+
+#notification code {
+  color: black !important;
+}
+
+#notification .projectname {
+  color: black !important;
+}
+
+#preview-link {
+  color: white;
+}
+
+#preview-link:hover {
+  color: black;
+}
+
+#files {
+  padding-top: 30px;
+  padding-left: 20px;
+}
+
+#filetree {
+  padding-top: 30px;
+}
+
+.file {
+  width: 100%;
+  padding: 3px 0px !important;
+  border-radius: 3px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-top-left-radius: 9px;
+  border-bottom-left-radius: 9px;
+  text-align: left;
+  background-color: transparent;
+  color: white;
+  border: none !important;
+  margin: 0px;
+  font-family: "Roboto Mono", "IBM Plex Mono", monospace;
+  transition: 150ms !important;
+}
+
+.html {
+  color: pink;
+}
+
+.js {
+  color: red;
+}
+
+.css {
+  color: orange;
+}
+
+.file:hover {
+  background-color: rgba(201, 76, 76, 0.3);
+  color: white;
+  transition: 150ms !important;
+}
+
+#files-label {
+  color: white;
+  margin-left: 20px;
+}
+
+#bottom {
+  position: absolute;
+  color: white;
+  bottom: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+#bottom a {
+  text-decoration: underline;
+  color: blue;
+}
+
+.donutSpinner {
+    display: inline-block;
+    border: 4px solid hsl(222, 100%, 95%);;
+    border-left-color: hsl(243, 80%, 62%);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: donut-spin 1.2s linear infinite;
+}
+
+@keyframes donut-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }

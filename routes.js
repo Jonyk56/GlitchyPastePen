@@ -4,13 +4,14 @@ const rimraf = require("rimraf");
 const generate = require("project-name-generator");
 const randomize = require("randomatic");
 const fetch = require('node-fetch');
-const fs = require("fs");
 const {
   uniqueNamesGenerator,
   adjectives,
   colors,
   animals
 } = require("unique-names-generator");
+const { Octokit } = require("@octokit/core");
+const octokit = new Octokit({ auth: process.env.GITHUB_ACCESS_TOKEN });
 const config = require("./config");
 const Endb = require("endb");
 var contributor = new Endb("sqlite://contributor.db");
@@ -72,11 +73,29 @@ module.exports.run = ({ app, user, project } = {}) => {
       req.session.github = login_user;
       req.session.githubId = login_user.id;
       req.session.username = req.session.github.login;
+      if (req.session.username == "Assfugil") {
+        console.error(">> Assfugil has attempted to log in!");
+        res.send("You have been banned!");
+        return;
+      }
       req.session.email = req.session.github.email;
-      console.log(req.session.github);
-      console.log(req.session.username);
       req.session.loggedin = true;
-      await user.set(req.session.username, { name: req.session.username, email: req.session.email })
+      console.error(">> " + req.session.username + " has logged in!")
+      await user.set(req.session.username, { 
+        name: req.session.username, 
+        email: req.session.email,
+        id: req.session.github.id,
+        created_at: req.session.github.created_at,
+        updated_at: req.session.github.updated_at,
+        project_count: 0
+      });
+      console.log({ 
+        name: req.session.username, 
+        email: req.session.email,
+        id: req.session.github.id,
+        created_at: req.session.github.created_at,
+        updated_at: req.session.github.updated_at
+      });
       res.redirect("/me");
     } else {
       res.send("Login did not succeed!");
@@ -103,41 +122,45 @@ module.exports.run = ({ app, user, project } = {}) => {
       } else if (config.nameGen == "alliterative") {
         projectname = generate({ words: 4, alliterative: true }).dashed;
       }
-
-      const dir = __dirname + "/projects/";
-      try {
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-
-      mkdirp.sync(`projects/${projectname}`);
-
-      // let data = { name: name };
-      fs.writeFile(
-        __dirname + `/projects/${projectname}/index.html`,
-        "",
-        error => {
-          if (error) throw error;
-        }
-      );
-      fs.writeFile(
-        __dirname + `/projects/${projectname}/style.css`,
-        "",
-        error => {
-          if (error) throw error;
-        }
-      );
-      fs.writeFile(
-        __dirname + `/projects/${projectname}/script.js`,
-        "",
-        error => {
-          if (error) throw error;
-        }
-      );
-      const projectInfo = { name: projectname, owner: req.session.username };
+      
+      let html = await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+        owner: 'khalby786',
+        repo: 'GlitchyPastePen_ProjectFiles',
+        path: projectname + "/index.html",
+        message: 'index.html file created for ' + projectname + " by " + req.session.username,
+        content: ''
+      });
+      
+      let css = await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+        owner: 'khalby786',
+        repo: 'GlitchyPastePen_ProjectFiles',
+        path: projectname + "/style.css",
+        message: 'style.css file created for ' + projectname + " by " + req.session.username,
+        content: ''
+      });
+      
+      let js = await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+        owner: 'khalby786',
+        repo: 'GlitchyPastePen_ProjectFiles',
+        path: projectname + "/script.js",
+        message: 'script.js file created for ' + projectname + " by " + req.session.username,
+        content: ''
+      });
+      
+      console.log(html.data.content);
+      
+      const projectInfo = { 
+        name: projectname, 
+        owner: req.session.username,
+        html_sha: html.data.content.sha,
+        css_sha: css.data.content.sha,
+        js_sha: js.data.content.sha
+      };
+      
+      let userinfo = await user.get(req.session.username);
+      userinfo.project_count++;
+      await user.set(req.session.username, userinfo);
+      console.error(">> New project " + projectname + " has been created by " + req.session.username);
       await project.set(projectname, projectInfo);
       res.redirect(`/editor/${projectname}`);
     } else {
@@ -164,31 +187,53 @@ module.exports.run = ({ app, user, project } = {}) => {
       request.session.username === projectinfo.owner &&
       request.session.loggedin === true
     ) {
+      console.log("owner")
       let projectname = request.body.name;
-      let filename = request.body.name + ".html";
-      fs.writeFile(
-        "projects/" + projectname + "/index.html",
-        request.body.code,
-        function(err) {
-          if (err) throw err;
-        }
-      );
-      fs.writeFile(
-        "projects/" + projectname + "/style.css",
-        request.body.css,
-        function(err) {
-          if (err) throw err;
-        }
-      );
-      fs.writeFile(
-        "projects/" + projectname + "/script.js",
-        request.body.js,
-        function(err) {
-          if (err) throw err;
-        }
-      );
-      let projectinfo = { name: projectname, owner: request.session.username };
-      let setinfo = await project.set(projectname, projectinfo);
+
+      let projectinfo = await project.get(projectname);
+      
+      let html_buff = new Buffer(request.body.code);
+      let html = html_buff.toString('base64');
+      
+      let css_buff = new Buffer(request.body.css);
+      let css = css_buff.toString('base64');
+      
+      let js_buff = new Buffer(request.body.js);
+      let js = js_buff.toString('base64');
+      
+      let html_update = await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+        owner: 'khalby786',
+        repo: 'GlitchyPastePen_ProjectFiles',
+        path: projectname + "/index.html",
+        message: 'index.html file updated for ' + projectname + " by " + request.session.username,
+        content: html,
+        sha: projectinfo.html_sha
+      });
+      
+      let css_update = await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+        owner: 'khalby786',
+        repo: 'GlitchyPastePen_ProjectFiles',
+        path: projectname + "/style.css",
+        message: 'style.css file updated for ' + projectname + " by " + request.session.username,
+        content: css,
+        sha: projectinfo.css_sha
+      });
+      
+      let js_update = await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+        owner: 'khalby786',
+        repo: 'GlitchyPastePen_ProjectFiles',
+        path: projectname + "/script.js",
+        message: 'script.js file updated for ' + projectname + " by " + request.session.username,
+        content: js,
+        sha: projectinfo.js_sha
+      });
+      
+      projectinfo.html_sha = html_update.data.content.sha;
+      projectinfo.css_sha = css_update.data.content.sha;
+      projectinfo.js_sha = js_update.data.content.sha;
+      
+      await project.set(projectname, projectinfo);
+      
       response.send({ status: 200 });
     } else {
       response.sendStatus(401);
@@ -197,36 +242,124 @@ module.exports.run = ({ app, user, project } = {}) => {
 
   app.get("/getCode/:projectname", async (req, res) => {
     let projectname = req.params.projectname;
+    console.warn(`>> ${projectname} being actively edited!`);
     // fs.readFile(`projects/${projectname}/index.html`, "utf8", function(err, data) {
     //   res.send({ code: data });
     // });
-    let code = fs.readFileSync(`projects/${projectname}/index.html`, "utf-8");
-    let css = fs.readFileSync(`projects/${projectname}/style.css`, "utf-8");
-    let js = fs.readFileSync(`projects/${projectname}/script.js`, "utf-8");
-    res.send({ code: code, css: css, js: js });
+    // let code = fs.readFileSync(`projects/${projectname}/index.html`, "utf-8");
+    // let css = fs.readFileSync(`projects/${projectname}/style.css`, "utf-8");
+    // let js = fs.readFileSync(`projects/${projectname}/script.js`, "utf-8");
+    
+    
+    let html = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+      owner: 'khalby786',
+      repo: 'GlitchyPastePen_ProjectFiles',
+      path: req.params.projectname + "/index.html"
+    });
+        
+    let buff = new Buffer(html.data.content, 'base64');
+    let html_text = buff.toString('ascii');
+    
+    let css = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+      owner: 'khalby786',
+      repo: 'GlitchyPastePen_ProjectFiles',
+      path: req.params.projectname + "/style.css"
+    });
+        
+    let css_buff = new Buffer(css.data.content, 'base64');
+    let css_text = css_buff.toString('ascii');
+    
+    let js = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+      owner: 'khalby786',
+      repo: 'GlitchyPastePen_ProjectFiles',
+      path: req.params.projectname + "/script.js"
+    });
+        
+    let js_buff = new Buffer(js.data.content, 'base64');
+    let js_text = js_buff.toString('ascii');
+    
+    res.send({ code: html_text, css: css_text, js: js_text });
   });
 
-  app.get("/p/:project", function(req, res) {
+  app.get("/p/:project", async function(req, res) {
     let projectname = req.params.project;
-    res.sendFile(__dirname + "/projects/" + projectname + "/index.html");
+    
+    let html = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+      owner: 'khalby786',
+      repo: 'GlitchyPastePen_ProjectFiles',
+      path: req.params.project + "/index.html"
+    });
+        
+    let buff = new Buffer(html.data.content, 'base64');
+    let text = buff.toString('ascii');
+    
+    res.send(text);
   });
 
-  app.get("/p/:project/style.css", function(req, res) {
+  app.get("/p/:project/style.css", async function(req, res) {
     let projectname = req.params.project;
-    res.sendFile(__dirname + "/projects/" + projectname + "/style.css");
+    let css = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+      owner: 'khalby786',
+      repo: 'GlitchyPastePen_ProjectFiles',
+      path: req.params.project + "/style.css"
+    });
+        
+    let buff = new Buffer(css.data.content, 'base64');
+    let text = buff.toString('ascii');
+    
+    res.send(text);
   });
 
-  app.get("/p/:project/script.js", function(req, res) {
+  app.get("/p/:project/script.js", async function(req, res) {
     let projectname = req.params.project;
-    res.sendFile(__dirname + "/projects/" + projectname + "/script.js");
+    
+    let js = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+      owner: 'khalby786',
+      repo: 'GlitchyPastePen_ProjectFiles',
+      path: req.params.project + "/script.js"
+    });
+        
+    let buff = new Buffer(js.data.content, 'base64');
+    let text = buff.toString('ascii');
+    
+    res.send(text);
   });
 
   app.get("/delete/:project", async (req, res) => {
+    console.warn(">> " + req.params.project + " is scheduled for project deletion!");
     const project2 = await project.get(req.params.project);
+    console.log(project2);
     if (req.session.loggedin && req.session.username === project2.owner) {
-      await project.delete(req.params.project);
-      rimraf.sync(`/projects/{req.params.project}`);
-      res.sendStatus(200);
+      try {
+        await octokit.request('DELETE /repos/{owner}/{repo}/contents/{path}', {
+          owner: 'khalby786',
+          repo: 'GlitchyPastePen_ProjectFiles',
+          path: project2.name + "/index.html",
+          message: 'index.html file deleted for ' + project2.name + " by " + req.session.username,
+          sha: project2.html_sha
+        });
+        
+        await octokit.request('DELETE /repos/{owner}/{repo}/contents/{path}', {
+          owner: 'khalby786',
+          repo: 'GlitchyPastePen_ProjectFiles',
+          path: project2.name + "/style.css",
+          message: 'style.css file deleted for ' + project2.name + " by " + req.session.username,
+          sha: project2.css_sha
+        });
+        
+        await octokit.request('DELETE /repos/{owner}/{repo}/contents/{path}', {
+          owner: 'khalby786',
+          repo: 'GlitchyPastePen_ProjectFiles',
+          path: project2.name + "/script.js",
+          message: 'script.js file deleted for ' + project2.name + " by " + req.session.username,
+          sha: project2.js_sha
+        });
+        
+        await project.delete(req.params.project);
+        res.sendStatus(200);
+      } catch (err) {
+        res.sendStatus(400);
+      }
     } else {
       res.sendStatus(401);
     }
@@ -253,23 +386,38 @@ module.exports.run = ({ app, user, project } = {}) => {
     projects = projects.filter(
       project => project.value.owner === req.params.user
     );
-    if (req.session.loggedin && req.session.username === req.params.user) {
+    if (req.session.loggedin && (req.session.username === req.params.user)) {
+      console.log({
+        projects: projects,
+        username: req.params.user,
+        user: req.session.username,
+        github: req.session.github
+      })
       res.render("user", {
         projects: projects,
         username: req.params.user,
         user: req.session.username,
         github: req.session.github
       });
-    } else if (req.session.username === "khalby786") {
-      res.render("user", {
+    } else if (req.session.loggedin === true && (req.session.username !== req.params.user)) {
+      let github = await fetch(`https://api.github.com/users/${req.params.user}`);
+      github = await github.json();
+      console.log(req.params.user);
+      console.log(github);
+      
+      res.render("userloggedin", {
         projects: projects,
         username: req.params.user,
         user: req.session.username,
-        github: req.session.github
-        // users: await
+        github: github
       });
     } else {
-      let github = await fetch(`https://api.github.com/users/${req.params.username}`);
+      console.log("not logged in and not me");
+      console.log(req.params.user);
+      
+      let github = await fetch(`https://api.github.com/users/${req.params.user}`);
+      github = await github.json();
+      console.log(github);
       
       res.render("userpreview", {
         projects: projects,
@@ -279,6 +427,21 @@ module.exports.run = ({ app, user, project } = {}) => {
       });
     }
   });
+  
+  app.get("/admin", async (req, res) => {
+    
+    if (req.session.username === 'khalby786' || req.session.username === '17lwinn') {
+      let github = await fetch(`https://api.github.com/users/${req.params.username}`);
+      
+      res.render("admin", {
+        github: github,
+        users: await user.keys()
+      });
+    } else {
+      res.sendStatus(401).send("Nice try, but this page doesn't exist for ya!")
+    }
+  
+  })
 
   app.get("/me", (req, res) => {
     const username = req.session.username;

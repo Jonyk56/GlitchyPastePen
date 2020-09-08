@@ -5,9 +5,10 @@
   <meta name="description" content="View <%= github.login %>'s profile on GlitchyPastePen!">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Raleway&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
     @import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@500&family=IBM+Plex+Mono&display=swap');
     
-     body {
+    body {
       --fore: black;
       --back: white;
       background-color: var(--back);
@@ -42,6 +43,7 @@
       font-family: "Fira Mono", "Inter", "Raleway", sans-serif;
       transition: 1s ease;
       background-color: white;
+      border: 1px solid grey;
       border-radius: 5px;
       margin-top: 20px;
       display: block;
@@ -57,7 +59,6 @@
         0 0px 33.4px rgba(0, 0, 0, 0.05),
         0 0px 80px rgba(0, 0, 0, 0.07)
       ;
-      border: 1px solid grey;
       transition: 150ms;
     }
     
@@ -140,24 +141,33 @@
       height: 2px;
     }
 
-
+    
   </style>
+  <script>
+    function remove(project) {
+      fetch("/delete/" + project)
+      .then(res => res.json())
+      .then(data => {
+        window.location.reload()
+        console.log(data);
+      })
+    }  
+  </script>
 </head>
 <body>  
   <header>
     <a href="/"><img src="https://cdn.glitch.com/a1686874-cbbf-4ca9-b412-cd53a73b9ceb%2Fglitchypastepen.png?v=1587918769653" height="100px"></a>
     <button class="new">
-      New Project
+      <a href="/logout">Logout</a>
     </button>
-    <a href="/"><button class="new">
-        Login
-      </button></a>
-      <a href="/signup"><button class="new">
-        Signup
-    </button></a>
+    <a href="/editor/new">
+      <button class="new">
+        New Project
+      </button>
+    </a>
   </header>
+  <br><br>
   <center>
-    <br><br>
     <img src="<%= github.avatar_url %>" style="border-radius:50%;width:300px;">
     <h1>
       <%= username %>
@@ -170,18 +180,25 @@
           <b>Twitter</b> - @<%= github.twitter_username %>
         <% } %>
       </span>
+      
     </p>
   </center>
   <div id = "main">
-    <i>PROJECTS</i><br /><br />
-    <% for (var project of projects) { %>
-      <div class = "project">
-        <%= project.key  %>&nbsp;&nbsp;
-        <br />
-        <a href="/p/<%= project.key %>"><img style="float:right;margin-right:10px;" src="https://cdn.glitch.com/622554c6-3118-4838-8819-e003b9525f5d%2Fexternal.svg?v=1589450399039" height="30px;"></a>
-        <a href="/editor/<%= project.key %>"><img style="float:right;margin-right:15px;" src="https://cdn.glitch.com/622554c6-3118-4838-8819-e003b9525f5d%2Fedit.svg?v=1589450679556" height="30px"></a>
-        <br /><br />
-      </div>
+    <i>YOUR PROJECTS</i><br /><br />
+    <% if ((!projects) || (projects === [])) { %>
+      <span>It's if</span>
+      <img src="https://cdn.glitch.com/622554c6-3118-4838-8819-e003b9525f5d%2Fundraw_empty_xct9.svg?v=1599306004713" width="100%" />
+    <% } else { %>
+      <% for (var project of projects) { %>
+        <span>It's else</span>
+        <div class = "project">
+          <%= project.key %> &nbsp;&nbsp;
+          <br />
+          <a href="/p/<%= project.key %>"><img style="float:right;margin-right:10px;" src="https://cdn.glitch.com/622554c6-3118-4838-8819-e003b9525f5d%2Fexternal.svg?v=1589450399039" height="30px;"></a>
+          <a href="/editor/<%= project.key %>"><img style="float:right;margin-right:15px;" src="https://cdn.glitch.com/622554c6-3118-4838-8819-e003b9525f5d%2Fedit.svg?v=1589450679556" height="30px"></a>
+          <br /><br />
+        </div>
+      <% } %>
     <% } %>
   </div>
   <br /><br />
