@@ -2,7 +2,7 @@
 const editor = ace.edit("editor");
 const format = ace.require("ace/ext/beautify");
 const io = require("socket.io");
-const iframe = document.querySelector("iframe");
+const iframe = document.getElementById("devtool");
 const editorDiv = document.getElementById("editor");
 const footer = document.getElementById("editor-footer");
 const projecturl = window.location.href;
@@ -12,13 +12,12 @@ const projectname_el = document.getElementById("project-name");
 // Ace.js configurations
 ace.require("ace/ext/language_tools");
 
-editor.setTheme("ace/theme/monokai");
+editor.setTheme("ace/theme/vibrant_ink");
 editor.session.setMode("ace/mode/html");
 
 editor.setOptions({
-  fontSize: "14px",
+  fontSize: "16px",
   fontFamily: "Fira Mono",
-  enableBasicAutocompletion: true,
   enableSnippets: true,
   enableLiveAutocompletion: true, 
   autoScrollEditorIntoView: true
@@ -73,8 +72,7 @@ window.onkeyup = () => {
 };
 
 projectname_el.value = projectname;
-document.getElementsByClassName("projectname")[0].innerText = projectname;
-document.getElementsByClassName("projectname")[1].innerText = projectname;
+document.getElementById("preview-link").href = "https://glitchypastepen.glitch.me/p/" + projectname;
 
 projectname_el.onclick = () => {
   simplecopy(projectname_el.value);
@@ -128,22 +126,23 @@ function deploy() {
     .then(response => response.json())
     .then(data => {
       if (data.status === 200) {
-        document.getElementById("status").style.display = "block";
-        document.getElementById("status").onclick = function() {
-          this.style.display = "none";
-        };
         document.getElementById("status").innerHTML =
           'Your project has been successfully deployed <br />at <a href="/p/' +
           name +
           '">https://glitchypastepen.glitch.me/p/' +
           name +
           "</a>";
+        swal.fire({
+          html: 'Your project has been successfully saved and deployed <br />at <a href="/p/' + name + '">https://glitchypastepen.glitch.me/p/' + name + "</a>",
+          icon: "success",
+        });
       } else {
-        document.getElementById("status").style.display = "block";
-        document.getElementById("status").style.backgroundColor = "red";
-        document.getElementById("status").innerHTML =
-          "Something went wrong! <br />Try again?";
+        swal.fire({
+          text: "Something went wrong, try again?",
+          icon: "error",
+        });
       }
+      
     });
 }
 
@@ -182,5 +181,12 @@ if (iframe.style.display === 'block') {
 }
 
 window.onload = () => {
-  document.getElementById("loader").style.display = "none";
+  grecaptcha.execute();
+}
+
+function showCopyPopup() {
+  swal.fire({
+    text: "The code has been copied!",
+    icon: "success",
+  });
 }
